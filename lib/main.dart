@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:currency/utils/routes.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'models/currency_model.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter<CurrencyModel>(CurrencyModelAdapter());
   runApp(const MyApp());
 }
 
