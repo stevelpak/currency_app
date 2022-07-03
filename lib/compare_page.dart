@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:currency/models/currency_model.dart';
 import 'package:currency/utils/constants.dart';
 import 'package:currency/utils/routes.dart';
 import 'package:currency/utils/hive_util.dart';
+import 'package:intl/intl.dart';
 
 class ComparePage extends StatefulWidget {
   const ComparePage({Key? key}) : super(key: key);
@@ -22,7 +24,7 @@ class _ComparePageState extends State<ComparePage> with HiveUtil {
       TextEditingController();
   final FocusNode _topFocus = FocusNode();
   final FocusNode _bottomFocus = FocusNode();
-  final List<CurrencyModel> _listCurrency = [];
+  List<CurrencyModel> _listCurrency = [];
   CurrencyModel? topCur;
   CurrencyModel? bottomCur;
 
@@ -69,29 +71,52 @@ class _ComparePageState extends State<ComparePage> with HiveUtil {
   }
 
   Future<bool?> _loadData() async {
-    try {
-      var response =
-          await get(Uri.parse('https://cbu.uz/uz/arkhiv-kursov-valyut/json/'));
-      if (response.statusCode == 200) {
-        for (final item in jsonDecode(response.body)) {
-          var model = CurrencyModel.fromJson(item);
-          if (model.ccy == 'USD') {
-            topCur = model;
-          } else if (model.ccy == 'RUB') {
-            bottomCur = model;
+    if (await loadLocalData()) {
+      try {
+        var response = await get(
+            Uri.parse('https://cbu.uz/uz/arkhiv-kursov-valyut/json/'));
+        if (response.statusCode == 200) {
+          for (final item in jsonDecode(response.body)) {
+            var model = CurrencyModel.fromJson(item);
+            if (model.ccy == 'USD') {
+              topCur = model;
+            } else if (model.ccy == 'RUB') {
+              bottomCur = model;
+            }
+            _listCurrency.add(model);
+            await saveBox<String>(dateBox, topCur?.date ?? "", key: dateKey);
+            await saveBox<List<CurrencyModel>>(currencyBox, _listCurrency,
+                key: currencyListKey);
           }
-          _listCurrency.add(model);
+          return true;
+        } else {
+          _showMessage('Unknown error');
         }
-        return true;
-      } else {
-        _showMessage('Unknown error');
+      } on SocketException {
+        _showMessage('Connection error');
+      } catch (e) {
+        _showMessage(e.toString());
       }
-    } on SocketException {
-      _showMessage('Connection error');
-    } catch (e) {
-      _showMessage(e.toString());
     }
     return null;
+  }
+
+  Future<bool> loadLocalData() async {
+    try {
+      var date = await getBox<String>(dateBox, key: dateKey);
+      if (date ==
+          DateFormat('dd.MM.yyyy')
+              .format(DateTime.now().add(const Duration(days: -1)))) {
+        _listCurrency = await getBox(currencyBox, key: currencyListKey) ?? [];
+        return false;
+      } else {
+        return true;
+      }
+    } catch (e) {
+      log(e.toString());
+    }
+
+    return true;
   }
 
   _showMessage(String text, {bool isError = true}) {
