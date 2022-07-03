@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:currency/compare_page.dart';
+import 'package:currency/utils/routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,9 +10,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ComparePage(),
+      onGenerateRoute: (settings) => Routes.generateRoute(settings),
     );
   }
 }
