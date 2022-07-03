@@ -222,7 +222,7 @@ mixin HiveUtil {
     }
     List<T> list = [];
     for (var e in box.keys) {
-      T? v = await box.get(e);
+      T? v = box.get(e);
       if (v != null) {
         list.add(v);
       }
