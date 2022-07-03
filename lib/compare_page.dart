@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 import 'package:currency/models/currency_model.dart';
 import 'package:currency/utils/constants.dart';
 import 'package:currency/utils/routes.dart';
+import 'package:currency/utils/hive_util.dart';
 
 class ComparePage extends StatefulWidget {
   const ComparePage({Key? key}) : super(key: key);
@@ -15,7 +16,7 @@ class ComparePage extends StatefulWidget {
   State<ComparePage> createState() => _ComparePageState();
 }
 
-class _ComparePageState extends State<ComparePage> {
+class _ComparePageState extends State<ComparePage> with HiveUtil {
   final TextEditingController _editingControllerTop = TextEditingController();
   final TextEditingController _editingControllerBottom =
       TextEditingController();
@@ -119,11 +120,11 @@ class _ComparePageState extends State<ComparePage> {
                 children: [
                   RichText(
                     text: TextSpan(
-                      text: 'Hello Umidjon\n',
+                      text: 'Hello Steve,\n',
                       style: kTextStyle(size: 16),
                       children: [
                         TextSpan(
-                          text: 'Welcome',
+                          text: 'Wellcome Back',
                           style:
                               kTextStyle(size: 20, fontWeight: FontWeight.bold),
                         ),
@@ -188,13 +189,29 @@ class _ComparePageState extends State<ComparePage> {
                               children: [
                                 Column(
                                   children: [
-                                    _itemExch(_editingControllerTop, topCur,
-                                        _topFocus),
+                                    _itemExch(
+                                      _editingControllerTop,
+                                      topCur,
+                                      _topFocus,
+                                      ((value) {
+                                        if (value is CurrencyModel) {
+                                          setState(() => topCur = value);
+                                        }
+                                      }),
+                                    ),
                                     const SizedBox(
                                       height: 15,
                                     ),
-                                    _itemExch(_editingControllerBottom,
-                                        bottomCur, _bottomFocus),
+                                    _itemExch(
+                                      _editingControllerBottom,
+                                      bottomCur,
+                                      _bottomFocus,
+                                      ((value) {
+                                        if (value is CurrencyModel) {
+                                          setState(() => bottomCur = value);
+                                        }
+                                      }),
+                                    ),
                                   ],
                                 ),
                                 InkWell(
@@ -255,7 +272,7 @@ class _ComparePageState extends State<ComparePage> {
   }
 
   Widget _itemExch(TextEditingController controller, CurrencyModel? model,
-      FocusNode focusNode) {
+      FocusNode focusNode, Function callback) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -284,7 +301,12 @@ class _ComparePageState extends State<ComparePage> {
                 ),
               ),
               GestureDetector(
-                onTap: () => Navigator.pushNamed(context, Routes.currencyPage),
+                onTap: () => Navigator.pushNamed(context, Routes.currencyPage,
+                    arguments: {
+                      'list_currency': _listCurrency,
+                      'top_cur': topCur?.ccy,
+                      'bottom_cur': bottomCur?.ccy
+                    }).then((value) => callback(value)),
                 child: Container(
                   padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(

@@ -35,3 +35,8 @@ ButtonStyle buttonStyle({
             side: side ?? BorderSide.none),
       ));
 }
+
+const String currencyBox = 'currency_box';
+const String currencyListKey = 'currency_list_key';
+const String dateKey = 'date_key';
+const String dateBox = 'date_box';

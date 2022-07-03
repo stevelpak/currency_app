@@ -15,7 +15,10 @@ class Routes {
         case comparePage:
           return MaterialPageRoute(builder: (context) => const ComparePage());
         case currencyPage:
-          return MaterialPageRoute(builder: (context) => const CurrencyPage());
+          return MaterialPageRoute(
+            builder: (context) => CurrencyPage(
+                args?['list_currency'], args?['top_cur'], args?['bottom_cur']),
+          );
         default:
           return MaterialPageRoute(builder: (context) => const ComparePage());
       }
