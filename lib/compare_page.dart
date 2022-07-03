@@ -2,10 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:currency/models/currency_model.dart';
-import 'package:http/http.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:currency/currency_page.dart';
+import 'package:http/http.dart';
+import 'package:currency/models/currency_model.dart';
+import 'package:currency/utils/constants.dart';
+import 'package:currency/utils/routes.dart';
 
 class ComparePage extends StatefulWidget {
   const ComparePage({Key? key}) : super(key: key);
@@ -57,6 +58,15 @@ class _ComparePageState extends State<ComparePage> {
     });
   }
 
+  @override
+  void dispose() {
+    _editingControllerTop.dispose();
+    _editingControllerBottom.dispose();
+    _topFocus.dispose();
+    _bottomFocus.dispose();
+    super.dispose();
+  }
+
   Future<bool?> _loadData() async {
     try {
       var response =
@@ -89,19 +99,10 @@ class _ComparePageState extends State<ComparePage> {
         backgroundColor: isError ? Colors.red : Colors.green[400],
         content: Text(
           text,
-          style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+          style: kTextStyle(size: 15, fontWeight: FontWeight.w500),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _editingControllerTop.dispose();
-    _editingControllerBottom.dispose();
-    _topFocus.dispose();
-    _bottomFocus.dispose();
-    super.dispose();
   }
 
   @override
@@ -117,14 +118,14 @@ class _ComparePageState extends State<ComparePage> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   RichText(
-                    text: const TextSpan(
-                      text: 'Hello Steve,\n',
-                      style: TextStyle(fontSize: 16),
+                    text: TextSpan(
+                      text: 'Hello Umidjon\n',
+                      style: kTextStyle(size: 16),
                       children: [
                         TextSpan(
-                          text: 'Wellcome Back',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
+                          text: 'Welcome',
+                          style:
+                              kTextStyle(size: 20, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -166,11 +167,10 @@ class _ComparePageState extends State<ComparePage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                const Text(
+                                Text(
                                   'Exchange',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
+                                  style: kTextStyle(
+                                      size: 16, fontWeight: FontWeight.w600),
                                 ),
                                 IconButton(
                                   onPressed: () {},
@@ -189,12 +189,12 @@ class _ComparePageState extends State<ComparePage> {
                                 Column(
                                   children: [
                                     _itemExch(_editingControllerTop, topCur,
-                                        _topFocus, context),
+                                        _topFocus),
                                     const SizedBox(
                                       height: 15,
                                     ),
                                     _itemExch(_editingControllerBottom,
-                                        bottomCur, _bottomFocus, context),
+                                        bottomCur, _bottomFocus),
                                   ],
                                 ),
                                 InkWell(
@@ -229,11 +229,11 @@ class _ComparePageState extends State<ComparePage> {
                         ),
                       );
                     } else if (snapshot.hasError) {
-                      return const Expanded(
+                      return Expanded(
                         child: Center(
                           child: Text(
                             'Error',
-                            style: TextStyle(fontSize: 18),
+                            style: kTextStyle(size: 18),
                           ),
                         ),
                       );
@@ -255,9 +255,7 @@ class _ComparePageState extends State<ComparePage> {
   }
 
   Widget _itemExch(TextEditingController controller, CurrencyModel? model,
-      FocusNode focusNode, BuildContext context, Function callback) {
-    Map<String, dynamic>? args;
-    args ?? <String, dynamic>{};
+      FocusNode focusNode) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -274,28 +272,19 @@ class _ComparePageState extends State<ComparePage> {
                 child: TextField(
                   controller: controller,
                   focusNode: focusNode,
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
+                  style: kTextStyle(size: 24, fontWeight: FontWeight.bold),
                   keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     border: InputBorder.none,
                     isDense: true,
                     hintText: '0.00',
                     hintStyle:
-                        TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        kTextStyle(size: 24, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
               GestureDetector(
-                onTap: () {
-                  context;
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            CurrencyPage(args?['list_currency'])),
-                  );
-                },
+                onTap: () => Navigator.pushNamed(context, Routes.currencyPage),
                 child: Container(
                   padding: const EdgeInsets.all(7),
                   decoration: BoxDecoration(
@@ -314,8 +303,8 @@ class _ComparePageState extends State<ComparePage> {
                       padding: const EdgeInsets.only(left: 5, right: 10),
                       child: Text(
                         model?.ccy ?? 'UNK',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
+                        style:
+                            kTextStyle(size: 16, fontWeight: FontWeight.w600),
                       ),
                     ),
                     const Icon(
@@ -332,8 +321,8 @@ class _ComparePageState extends State<ComparePage> {
             controller.text.isNotEmpty
                 ? (double.parse(controller.text) * 0.05).toStringAsFixed(2)
                 : '0.00',
-            style: const TextStyle(
-                fontWeight: FontWeight.w600, color: Colors.white54),
+            style:
+                kTextStyle(fontWeight: FontWeight.w600, color: Colors.white54),
           )
         ],
       ),

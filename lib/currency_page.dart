@@ -1,12 +1,9 @@
-import 'package:currency/models/currency_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:currency/compare_page.dart';
+import 'package:currency/utils/constants.dart';
 
 class CurrencyPage extends StatefulWidget {
-  const CurrencyPage(this._listCurrency, {Key? key}) : super(key: key);
-  final  List<CurrencyModel> _listCurrency;
-  
+  const CurrencyPage({Key? key}) : super(key: key);
 
   @override
   State<CurrencyPage> createState() => _CurrencyPageState();
@@ -37,9 +34,9 @@ class _CurrencyPageState extends State<CurrencyPage> {
                     size: 20,
                   ),
                   hintText: 'Search',
-                  hintStyle: const TextStyle(
+                  hintStyle: kTextStyle(
                       color: Colors.white54,
-                      fontSize: 16,
+                      size: 16,
                       fontWeight: FontWeight.w500),
                   suffixIcon: IconButton(
                       onPressed: () {},
@@ -48,7 +45,6 @@ class _CurrencyPageState extends State<CurrencyPage> {
                 ),
               ),
             ),
-            Flexible(child: ListView.separated(itemBuilder: itemBuilder, separatorBuilder: (), itemCount: ))
           ],
         ),
       ),
