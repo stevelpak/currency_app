@@ -4,7 +4,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'models/currency_model.dart';
 
 void main() async {
-  await Hive.initFlutter();
+  await Hive.initFlutter(
+      "/home/stevelpak/Documents/Flutter Projects/currency/lib/data");
   Hive.registerAdapter<CurrencyModel>(CurrencyModelAdapter());
   runApp(const MyApp());
 }
